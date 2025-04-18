@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "revou-next-milestone2-be"
 version = "0.1.0"
-description = ""
+description = "E-Commerce Backend API using Flask and SQLAlchemy"
 authors = ["regaruzianto <regaruzianto@gmail.com>"]
 readme = "README.md"
 
@@ -17,6 +17,9 @@ flask-migrate = "^4.1.0"
 flask-jwt-extended = "^4.7.1"
 python-dotenv = "^1.1.0"
 supabase = "^2.15.0"
+marshmallow = "^3.20.1"
+marshmallow-sqlalchemy = "^0.29.0"
+email-validator = "^2.1.0.post1"
 
 
 [build-system]

@@ -1,0 +1,114 @@
+from flask_jwt_extended import create_access_token
+from datetime import timedelta
+from model.userModel import User
+from connector.db import db
+from schemas.auth_schema import RegisterSchema, LoginSchema
+from marshmallow import ValidationError
+
+class AuthService:
+    @staticmethod
+    def register(data):
+        try:
+            # Validate input data
+            schema = RegisterSchema()
+            data = schema.load(data)
+            
+            # Check if email already exists
+            if User.query.filter_by(email=data['email']).first():
+                raise ValidationError({'email': ['Email sudah terdaftar']})
+            
+            # Create new user
+            user = User(
+                name=data['name'],
+                email=data['email'],
+                password=data['password']
+            )
+            
+            # Add optional fields if provided
+            for field in ['phone', 'address_street', 'address_city', 
+                         'address_district', 'address_subdistrict', 
+                         'address_zipcode', 'address_country']:
+                if field in data:
+                    setattr(user, field, data[field])
+            
+            # Save to database
+            db.session.add(user)
+            db.session.commit()
+            
+            # Create access token
+            access_token = create_access_token(
+                identity=user.id,
+                expires_delta=timedelta(days=1)
+            )
+            
+            return {
+                'success': True,
+                'message': 'Registrasi berhasil',
+                'data': {
+                    'access_token': access_token,
+                    'token_type': 'Bearer',
+                    'user': user.to_dict()
+                }
+            }
+            
+        except ValidationError as e:
+            return {
+                'success': False,
+                'message': 'Validasi gagal',
+                'errors': e.messages
+            }
+        
+        except Exception as e:
+            db.session.rollback()
+            return {
+                'success': False,
+                'message': 'Terjadi kesalahan saat registrasi',
+                'errors': str(e)
+            }
+
+    @staticmethod
+    def login(data):
+        try:
+            # Validate input data
+            schema = LoginSchema()
+            data = schema.load(data)
+            
+            # Find user by email
+            user = User.query.filter_by(email=data['email']).first()
+            
+            # Check if user exists and password is correct
+            if not user or not user.check_password(data['password']):
+                return {
+                    'success': False,
+                    'message': 'Email atau password salah'
+                }
+            
+            # Create access token
+            access_token = create_access_token(
+                identity=user.id,
+                expires_delta=timedelta(days=1)
+            )
+            
+            return {
+                'success': True,
+                'message': 'Login berhasil',
+                'data': {
+                    'access_token': access_token,
+                    'token_type': 'Bearer',
+                    'user': user.to_dict()
+                }
+            }
+            
+        except ValidationError as e:
+            return {
+                'success': False,
+                'message': 'Validasi gagal',
+                'errors': e.messages
+            }
+        
+        except Exception as e:
+            return {
+                'success': False,
+                'message': 'Terjadi kesalahan saat login',
+                'errors': str(e)
+            } 
