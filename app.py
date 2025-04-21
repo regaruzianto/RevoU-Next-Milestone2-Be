@@ -3,6 +3,11 @@ from flask_cors import CORS
 from connector.db import db
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from router.userRoute import user_bp
+from router.productRoute import product_bp
+from router.orderRoute import order_bp
+from router.cartRoute import cart_bp
+# from celery_app import celery
 import os
 
 
@@ -11,9 +16,14 @@ app = Flask(__name__)
 CORS(app) # Ijinkan CORS
 jwt = JWTManager(app) # Aktifkan JWT
 
+
+# # konfigurasi Celery
+# app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL')
+# app.config['CELERY_RESULT_BACKEND'] = os.getenv('CELERY_BROKER_URL')
+# celery.conf.update(app.config)
+
 # konfigurasi JWT 
 app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  
-jwt = JWTManager(app)
 
 
 # Konfigurasi Database
@@ -29,6 +39,11 @@ print(os.getenv('POSTGRES_CONNECTION_STRING'))
 db.init_app(app)
 migrate = Migrate(app,db)
 
+
+app.register_blueprint(user_bp, url_prefix='/user')
+app.register_blueprint(product_bp, url_prefix='/product')
+app.register_blueprint(order_bp, url_prefix='/order')
+app.register_blueprint(cart_bp, url_prefix='/cart')
 
 # rute root
 @app.route("/")

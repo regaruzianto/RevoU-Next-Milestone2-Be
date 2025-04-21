@@ -37,12 +37,12 @@ class AuthService:
             
             # Create access token
             access_token = create_access_token(
-                identity=user.id,
+                identity=user.user_id,
                 expires_delta=timedelta(days=1)
             )
             
             return {
-                'success': True,
+                'status': "success",
                 'message': 'Registrasi berhasil',
                 'data': {
                     'access_token': access_token,
@@ -53,7 +53,7 @@ class AuthService:
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
@@ -61,7 +61,7 @@ class AuthService:
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat registrasi',
                 'errors': str(e)
             }
@@ -79,18 +79,18 @@ class AuthService:
             # Check if user exists and password is correct
             if not user or not user.check_password(data['password']):
                 return {
-                    'success': False,
+                    'status': 'error',
                     'message': 'Email atau password salah'
                 }
             
             # Create access token
             access_token = create_access_token(
-                identity=user.id,
+                identity=user.user_id,
                 expires_delta=timedelta(days=1)
             )
             
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Login berhasil',
                 'data': {
                     'access_token': access_token,
@@ -101,14 +101,14 @@ class AuthService:
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
         
         except Exception as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat login',
                 'errors': str(e)
             } 

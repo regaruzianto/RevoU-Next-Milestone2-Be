@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate
 
 class OrderItemSchema(Schema):
-    id = fields.Integer(dump_only=True)
+    orderItem_id = fields.Integer(dump_only=True)
     product_id = fields.Integer(dump_only=True)
     quantity = fields.Integer(dump_only=True)
     price = fields.Decimal(places=2, dump_only=True)
@@ -9,7 +9,7 @@ class OrderItemSchema(Schema):
     product = fields.Nested('ProductSchema', dump_only=True)
 
 class OrderSchema(Schema):
-    id = fields.Integer(dump_only=True)
+    order_id = fields.Integer(dump_only=True)
     total_amount = fields.Decimal(places=2, dump_only=True)
     status = fields.String(dump_only=True)
     shipping_address = fields.String(required=True)
@@ -24,12 +24,12 @@ class OrderCreateSchema(Schema):
     shipping_postal_code = fields.String(required=True, validate=validate.Length(max=10))
 
 class OrderResponseSchema(Schema):
-    success = fields.Boolean()
+    status = fields.String()
     message = fields.String()
     data = fields.Nested(OrderSchema)
 
 class OrderListResponseSchema(Schema):
-    success = fields.Boolean()
+    status = fields.String()
     message = fields.String()
     data = fields.List(fields.Nested(OrderSchema))
     pagination = fields.Dict(keys=fields.String(), values=fields.Integer()) 

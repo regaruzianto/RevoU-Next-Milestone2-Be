@@ -17,7 +17,7 @@ class CartService:
             
             schema = CartItemSchema(many=True)
             return {
-                'success': True,
+                'status': "success",
                 'message': 'Cart berhasil diambil',
                 'data': schema.dump(cart_items),
                 'total_items': total_items,
@@ -26,7 +26,7 @@ class CartService:
             
         except Exception as e:
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Terjadi kesalahan saat mengambil cart',
                 'errors': str(e)
             }
@@ -38,59 +38,65 @@ class CartService:
             schema = CartItemCreateSchema()
             data = schema.load(data)
             
-            # Check if product exists and has enough stock
-            product = Product.query.get(data['product_id'])
-            if not product or product.status != 'active':
-                return {
-                    'success': False,
-                    'message': 'Produk tidak ditemukan'
-                }
+            # Start transaction with explicit locking
+            with db.session.begin():
             
-            if product.stock < data['quantity']:
-                return {
-                    'success': False,
-                    'message': 'Stok produk tidak mencukupi'
-                }
-            
-            # Check if product already in cart
-            cart_item = CartItem.query.filter_by(
-                user_id=user_id,
-                product_id=data['product_id']
-            ).first()
-            
-            if cart_item:
-                # Update quantity if already in cart
-                new_quantity = cart_item.quantity + data['quantity']
-                if new_quantity > 10:
+                # Check if product exists and has enough stock
+                product = Product.query.filter_by(product_id = data['product_id'], status = 'active') \
+                    .with_for_update() \
+                    .first()
+
+                if not product:
                     return {
-                        'success': False,
-                        'message': 'Maksimal 10 item per produk dalam cart'
+                        'status': "error",
+                        'message': 'Produk tidak ditemukan'
                     }
-                cart_item.quantity = new_quantity
-            else:
-                # Create new cart item
-                cart_item = CartItem(
-                    user_id=user_id,
-                    product_id=data['product_id'],
-                    quantity=data['quantity']
-                )
-                db.session.add(cart_item)
             
-            db.session.commit()
+                if product.stock < data['quantity']:
+                    return {
+                        'status': "error",
+                        'message': 'Stok produk tidak mencukupi'
+                    }
+            
+                # Check if product already in cart
+                cart_item = CartItem.query.filter_by(
+                    user_id=user_id,
+                    product_id=data['product_id']
+                ).first()
+            
+                if cart_item:
+                    # Update quantity if already in cart
+                    new_quantity = cart_item.quantity + data['quantity']
+                    if new_quantity > 10:
+                        return {
+                            'status': "error",
+                            'message': 'Maksimal 10 item per produk dalam cart'
+                        }
+                    cart_item.quantity = new_quantity
+                else:
+                    # Create new cart item
+                    cart_item = CartItem(
+                        user_id=user_id,
+                        product_id=data['product_id'],
+                        quantity=data['quantity']
+                    )
+                    db.session.add(cart_item)
+            
             
             # Return updated cart
             return CartService.get_cart(user_id)
             
+            
         except ValidationError as e:
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Terjadi kesalahan saat menambah item ke cart',
                 'errors': str(e)
             }
@@ -104,20 +110,20 @@ class CartService:
             
             # Find cart item
             cart_item = CartItem.query.filter_by(
-                id=item_id,
+                cart_id=item_id,
                 user_id=user_id
             ).first()
             
             if not cart_item:
                 return {
-                    'success': False,
+                    'status': "error",
                     'message': 'Item tidak ditemukan dalam cart'
                 }
             
             # Check product stock
             if cart_item.product.stock < data['quantity']:
                 return {
-                    'success': False,
+                    'status': "error",
                     'message': 'Stok produk tidak mencukupi'
                 }
             
@@ -130,14 +136,14 @@ class CartService:
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Terjadi kesalahan saat mengupdate item cart',
                 'errors': str(e)
             }
@@ -147,13 +153,13 @@ class CartService:
         try:
             # Find and delete cart item
             cart_item = CartItem.query.filter_by(
-                id=item_id,
+                cart_id=item_id,
                 user_id=user_id
             ).first()
             
             if not cart_item:
                 return {
-                    'success': False,
+                    'status': "error",
                     'message': 'Item tidak ditemukan dalam cart'
                 }
             
@@ -166,7 +172,7 @@ class CartService:
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Terjadi kesalahan saat menghapus item dari cart',
                 'errors': str(e)
             }
@@ -179,14 +185,14 @@ class CartService:
             db.session.commit()
             
             return {
-                'success': True,
+                'status': "success",
                 'message': 'Cart berhasil dikosongkan'
             }
             
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': "error",
                 'message': 'Terjadi kesalahan saat mengosongkan cart',
                 'errors': str(e)
             } 

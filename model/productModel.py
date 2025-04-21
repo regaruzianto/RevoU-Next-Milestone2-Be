@@ -1,10 +1,11 @@
 from connector.db import db
+from sqlalchemy import func
 from datetime import datetime
 
 class Product(db.Model):
     __tablename__ = "products"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    product_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Numeric(10, 2), nullable=False)
@@ -14,8 +15,8 @@ class Product(db.Model):
     
     # Status and timestamps
     status = db.Column(db.String(20), nullable=False, default='active')
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
     cart_items = db.relationship('CartItem', backref='product', lazy=True)
@@ -31,7 +32,7 @@ class Product(db.Model):
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'product_id': self.product_id,
             'name': self.name,
             'description': self.description,
             'price': float(self.price),

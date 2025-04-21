@@ -118,6 +118,7 @@ cp .env.example .env
 
 4. Run migrations
 ```bash
+flask db migrate -m "Message for migration."
 flask db upgrade
 ```
 

@@ -42,7 +42,7 @@ class ProductService:
             # Prepare response
             schema = ProductSchema(many=True)
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Produk berhasil diambil',
                 'data': schema.dump(pagination.items),
                 'pagination': {
@@ -55,13 +55,13 @@ class ProductService:
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Parameter query tidak valid',
                 'errors': e.messages
             }
         except Exception as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat mengambil produk',
                 'errors': str(e)
             }
@@ -73,20 +73,20 @@ class ProductService:
             
             if not product or product.status != 'active':
                 return {
-                    'success': False,
+                    'status': 'error',
                     'message': 'Produk tidak ditemukan'
                 }
             
             schema = ProductSchema()
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Produk berhasil diambil',
                 'data': schema.dump(product)
             }
             
         except Exception as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat mengambil produk',
                 'errors': str(e)
             }
@@ -106,21 +106,21 @@ class ProductService:
             db.session.commit()
             
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Produk berhasil dibuat',
                 'data': schema.dump(product)
             }
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat membuat produk',
                 'errors': str(e)
             }
@@ -133,7 +133,7 @@ class ProductService:
             
             if not product:
                 return {
-                    'success': False,
+                    'status': 'error',
                     'message': 'Produk tidak ditemukan'
                 }
             
@@ -149,21 +149,21 @@ class ProductService:
             db.session.commit()
             
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Produk berhasil diupdate',
                 'data': schema.dump(product)
             }
             
         except ValidationError as e:
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Validasi gagal',
                 'errors': e.messages
             }
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat mengupdate produk',
                 'errors': str(e)
             }
@@ -176,7 +176,7 @@ class ProductService:
             
             if not product:
                 return {
-                    'success': False,
+                    'status': 'error',
                     'message': 'Produk tidak ditemukan'
                 }
             
@@ -185,14 +185,14 @@ class ProductService:
             db.session.commit()
             
             return {
-                'success': True,
+                'status': 'success',
                 'message': 'Produk berhasil dihapus'
             }
             
         except Exception as e:
             db.session.rollback()
             return {
-                'success': False,
+                'status': 'error',
                 'message': 'Terjadi kesalahan saat menghapus produk',
                 'errors': str(e)
             } 

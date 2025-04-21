@@ -8,9 +8,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    user_image = db.Column(db.String(255), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
     
     # Profile fields
@@ -44,9 +45,10 @@ class User(db.Model):
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'user_id': self.user_id,
             'name': self.name,
             'email': self.email,
+            'user_image': self.user_image,
             'address_street': self.address_street,
             'address_city': self.address_city,
             'address_district': self.address_district,

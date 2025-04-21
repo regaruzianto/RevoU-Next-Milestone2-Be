@@ -4,9 +4,9 @@ from datetime import datetime
 class CartItem(db.Model):
     __tablename__ = "cart_items"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    cart_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
     
     # Timestamps
@@ -20,7 +20,7 @@ class CartItem(db.Model):
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'cart_id': self.cart_id,
             'user_id': self.user_id,
             'product_id': self.product_id,
             'product': self.product.to_dict() if self.product else None,
