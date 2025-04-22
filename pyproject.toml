@@ -22,6 +22,7 @@ marshmallow-sqlalchemy = "^0.29.0"
 email-validator = "^2.1.0.post1"
 celery = "^5.5.1"
 redis = "^5.2.1"
+imagekitio = "^4.1.0"
 
 
 [build-system]

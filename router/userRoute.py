@@ -1,6 +1,7 @@
 from model.userModel import User
 from services.auth_service import AuthService
 from flask import Blueprint, request, jsonify
+from services.uploadimg_service import UploadImageService
 
 user_bp = Blueprint('user_bp', __name__)
 
@@ -31,3 +32,4 @@ def login():
             'message': 'Terjadi kesalahan server',
             'error': str(e)
         }),500
+    

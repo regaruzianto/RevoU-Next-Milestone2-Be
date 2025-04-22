@@ -7,6 +7,8 @@ from router.userRoute import user_bp
 from router.productRoute import product_bp
 from router.orderRoute import order_bp
 from router.cartRoute import cart_bp
+from router.uploadRoute import upload_bp
+from imagekitio import ImageKit
 # from celery_app import celery
 import os
 
@@ -44,6 +46,20 @@ app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(product_bp, url_prefix='/product')
 app.register_blueprint(order_bp, url_prefix='/order')
 app.register_blueprint(cart_bp, url_prefix='/cart')
+app.register_blueprint(upload_bp, url_prefix='/upload')
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    import traceback
+    print("DEBUG ERROR:")
+    traceback.print_exc()
+    return jsonify({
+        "status": "error",
+        "message": "Terjadi kesalahan pada server",
+        "error": str(e)
+    }), 500
+
 
 # rute root
 @app.route("/")

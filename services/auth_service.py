@@ -4,6 +4,8 @@ from model.userModel import User
 from connector.db import db
 from schemas.auth_schema import RegisterSchema, LoginSchema
 from marshmallow import ValidationError
+from services.uploadimg_service import UploadImageService
+
 
 class AuthService:
     @staticmethod
@@ -112,3 +114,5 @@ class AuthService:
                 'message': 'Terjadi kesalahan saat login',
                 'errors': str(e)
             } 
+        
+
