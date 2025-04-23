@@ -8,6 +8,7 @@ from router.productRoute import product_bp
 from router.orderRoute import order_bp
 from router.cartRoute import cart_bp
 from router.uploadRoute import upload_bp
+from router.bankRoute import bank_bp
 from imagekitio import ImageKit
 # from celery_app import celery
 import os
@@ -47,6 +48,7 @@ app.register_blueprint(product_bp, url_prefix='/product')
 app.register_blueprint(order_bp, url_prefix='/order')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 app.register_blueprint(upload_bp, url_prefix='/upload')
+app.register_blueprint(bank_bp, url_prefix='/bank')
 
 
 @app.errorhandler(Exception)
