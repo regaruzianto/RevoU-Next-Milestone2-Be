@@ -11,9 +11,12 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    user_image = db.Column(db.String(255), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
     
+    # image url dan Id imagekit
+    user_image = db.Column(db.String(255), nullable=True)
+    user_imageId = db.Column(db.String(255), nullable= True)
+
     # Profile fields
     address_street = db.Column(db.String(255), nullable=True)
     address_city = db.Column(db.String(100), nullable=True)
@@ -31,6 +34,7 @@ class User(db.Model):
     # Relationships
     cart_items = db.relationship('CartItem', backref='user', lazy=True)
     orders = db.relationship('Order', backref='user', lazy=True)
+    banks = db.relationship('Bank', backref = 'user', lazy=True)
 
     def __init__(self, name, email, password):
         self.name = name
@@ -49,6 +53,7 @@ class User(db.Model):
             'name': self.name,
             'email': self.email,
             'user_image': self.user_image,
+            'user_imageId': self.user_imageId,
             'address_street': self.address_street,
             'address_city': self.address_city,
             'address_district': self.address_district,

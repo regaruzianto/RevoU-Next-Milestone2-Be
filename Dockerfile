@@ -12,8 +12,10 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
 
 # Set working directory
 WORKDIR /app
@@ -27,5 +29,9 @@ RUN poetry install --no-root
 # Salin semua source code
 COPY . /app
 
+# Expose application port
+EXPOSE 5000
+
 # Jalankan aplikasi
-CMD ["python", "app.py"]
+# Set default command
+CMD ["flask", "--app", "app", "run", "--host", "0.0.0.0"]
