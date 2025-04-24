@@ -66,3 +66,5 @@ def clear_cart(user_id):
             'message': 'Terjadi kesalahan server',
             'error': str(e)
         }),500
+    
+

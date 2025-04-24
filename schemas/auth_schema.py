@@ -2,12 +2,14 @@ from marshmallow import Schema, fields, validate, validates, ValidationError
 import re
 
 class RegisterSchema(Schema):
-    name = fields.String(required=True, validate=validate.Length(min=3, max=100))
+    name = fields.String(validate=validate.Length(min=3, max=100))
     email = fields.Email(required=True)
     password = fields.String(required=True, validate=validate.Length(min=8))
     
     phone = fields.String(validate=validate.Length(min=10, max=20))
     user_image = fields.String()
+    user_imageId = fields.String()
+
     address_street = fields.String()
     address_city = fields.String()
     address_district = fields.String()
@@ -36,3 +38,15 @@ class AuthResponseSchema(Schema):
     access_token = fields.String()
     token_type = fields.String()
     user = fields.Dict() 
+
+class UpdateUserSchema(Schema):
+    name = fields.String(validate=validate.Length(min=3, max=100))
+    email = fields.Email()
+
+    phone = fields.String(validate=validate.Length(min=10, max=20))
+    address_street = fields.String()
+    address_city = fields.String()
+    address_district = fields.String()
+    address_subdistrict = fields.String()
+    address_zipcode = fields.String(validate=validate.Length(max=10))
+    address_country = fields.String()

@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token
 from datetime import timedelta
 from model.userModel import User
 from connector.db import db
-from schemas.auth_schema import RegisterSchema, LoginSchema
+from schemas.auth_schema import RegisterSchema, LoginSchema, UpdateUserSchema
 from marshmallow import ValidationError
 from services.uploadimg_service import UploadImageService
 
@@ -21,7 +21,7 @@ class AuthService:
             
             # Create new user
             user = User(
-                name=data['name'],
+                name='Username',
                 email=data['email'],
                 password=data['password']
             )
@@ -115,4 +115,63 @@ class AuthService:
                 'errors': str(e)
             } 
         
+    @staticmethod
+    def get_user(user_id):
+        try:
+            user = User.query.filter_by(user_id=user_id).first()
+            if not user:
+                return {
+                    'status': 'error',
+                    'message': 'User tidak ditemukan'
+                }
+            return {
+                'status': 'success',
+                'message': 'User berhasil diambil',
+                'data': user.to_dict()
+            }
+        except Exception as e:
+            return {
+                'status': 'error',
+                'message': 'Terjadi kesalahan di server',
+                'error': str(e)
+            }
 
+    @staticmethod
+    def update_user(user_id, data):
+        try:
+            user = User.query.filter_by(user_id=user_id).first()
+            if not user:
+                return {
+                    'status': 'error',
+                    'message': 'User tidak ditemukan'
+                }
+            
+            # validate input data
+            schema = UpdateUserSchema()
+            data = schema.load(data)
+
+            # for key,value in data.items():
+            #     setattr(user,key,value)
+            allowed_key = [
+                    "address_city", "address_district","address_subdistrict", 
+                   "address_street", "address_country", "address_zipcode",
+                   "email", "name", "phone"
+                ]
+
+            for k in allowed_key:
+                setattr(user, k, data[k])
+
+            
+            db.session.commit()
+            return {
+                'status': 'success',
+                'message': 'User berhasil diupdate',
+                'data': user.to_dict()
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {
+                'status': 'error',
+                'message': 'Terjadi kesalahan saat mengupdate user',
+                'errors': str(e)
+            }

@@ -5,6 +5,8 @@ import traceback
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 import base64
 import os
+from model.userModel import User
+from connector.db import db
 
 
 # Setup logging
@@ -83,4 +85,32 @@ class UploadImageService:
                 "error": str(e)
             }
          
-        
+    @staticmethod
+    def upload_image_profile(file, user_id):
+        try: 
+            user = User.query.filter_by(user_id=user_id).first()
+
+            if not user:
+                return {
+                    'status': 'error',
+                    'message': 'User tidak ditemukan'
+                }
+
+            result = UploadImageService.upload(file, folder_name='/users/profile')
+
+            user.user_image = result['data']['url']
+            user.user_imageId = result['data']['fileId']
+
+            db.session.commit()
+            return {
+            'status': 'success',
+            'message': 'User berhasil diupdate',
+            'data': user.to_dict()
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Terjadi kesalahan pada upload image.",
+                "error": str(e)
+            }

@@ -33,3 +33,29 @@ def login():
             'error': str(e)
         }),500
     
+@user_bp.route('/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        result = AuthService.get_user(user_id)
+
+        return jsonify(result), 200 if result.get("status") == 'success' else 400
+    except Exception as e:
+        return jsonify({
+            'status' : 'error',
+            'message': 'Terjadi kesalahan server',
+            'error': str(e)
+        }),500
+    
+@user_bp.route('/update/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        data = request.get_json()
+        result = AuthService.update_user(user_id,data)
+
+        return jsonify(result), 200 if result.get('status') == 'success' else 400
+    except Exception as e:
+        return jsonify({
+            'status' : 'error',
+            'message': 'Terjadi kesalahan server',
+            'error': str(e)
+        }),500
