@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, validate
 
+
 class ProductSchema(Schema):
     product_id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=validate.Length(min=3, max=200))
@@ -10,6 +11,10 @@ class ProductSchema(Schema):
     category = fields.String(required=True, validate=validate.Length(min=2, max=100))
     status = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
+
+    # nested schema
+    product_images = fields.Nested('ProductImageSchema', many=True, dump_only=True)
+
 
 class ProductQuerySchema(Schema):
     product_id = fields.Integer()

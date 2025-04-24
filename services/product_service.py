@@ -3,6 +3,7 @@ from connector.db import db
 from schemas.product_schema import ProductSchema, ProductQuerySchema
 from marshmallow import ValidationError
 from sqlalchemy import desc, asc
+from sqlalchemy.orm import joinedload
 
 class ProductService:
     @staticmethod
@@ -13,6 +14,7 @@ class ProductService:
             params = schema.load(query_params or {})
             
             # Start with base query
+
             query = Product.query.filter_by(status='active')
             
             # Apply filters
@@ -70,6 +72,12 @@ class ProductService:
     def get_product_by_id(product_id):
         try:
             product = Product.query.get(product_id)
+
+            # product = Product.query.options(joinedload(Product.product_images)).filter(
+            #     Product.product_id == product_id,
+            #     Product.status == 'active'
+            # ).first()
+            
             
             if not product or product.status != 'active':
                 return {
