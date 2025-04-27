@@ -17,7 +17,7 @@ def upload():
             return jsonify({
                 "status": "error",
                 "message": "File image tidak ditemukan di request."
-            }), 400
+            }), 404
 
         result = UploadImageService.upload(file, folder_name='/users/profile')
 
@@ -28,7 +28,7 @@ def upload():
             'status': 'error',
             'message': 'Terjadi kesalahan server',
             'error': str(e)
-        })
+        }),500
 
 @upload_bp.route('/userimage/<int:user_id>', methods=['POST'])
 def upload_user_image(user_id):
@@ -40,7 +40,7 @@ def upload_user_image(user_id):
             return jsonify({
                 "status": "error",
                 "message": "File image tidak ditemukan di request."
-            }), 400
+            }), 404
 
         result = UploadImageService.upload_image_profile(file, user_id)
 
@@ -51,5 +51,53 @@ def upload_user_image(user_id):
             'status': 'error',
             'message': 'Terjadi kesalahan server',
             'error': str(e)
-        })
+        }),500
 
+@upload_bp.route('/userimage/delete/<int:user_id>', methods=['DELETE'])
+def delete_user_image(user_id):
+    try:
+        result = UploadImageService.delete_image_profile(user_id)
+
+        return jsonify(result), 200 if result.get("status") == "success" else 400
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': 'Terjadi kesalahan server',
+            'error': str(e)
+        }), 500
+    
+@upload_bp.route('/productimage/<int:product_id>', methods=['POST'])
+def upload_product_image(product_id):
+    try:
+
+        file = request.files.get('image')
+
+        if not file:
+            return jsonify({
+                "status": "error",
+                "message": "File image tidak ditemukan di request."
+            }), 404
+
+        result = UploadImageService.upload_product_image(product_id,file, folder_name='/products')
+
+        return jsonify(result), 200 if result.get('status') == 'success' else 400
+    
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': "Terjadi kesalahan server"
+        }), 500
+    
+@upload_bp.route('/productimage/delete/<int:product_id>/<string:image_id>', methods=['DELETE'])
+def delete_product_image(product_id, file_id):
+    try:
+        result = UploadImageService.delete_product_image(product_id, file_id)
+
+        return jsonify(result), 200 if result.get('status') == 'success' else 400
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': "Terjadi kesalahan server",
+            'error': str(e)
+        })
