@@ -3,6 +3,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+import enum
+
+class GenderEnum(enum.Enum):
+    male = 'male'
+    female = 'female'
 
 
 class User(db.Model):
@@ -31,10 +36,13 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    gender = db.Column(db.Enum(GenderEnum, name="genderenum"), nullable=True)
+
     # Relationships
-    cart_items = db.relationship('CartItem', backref='user', lazy=True)
-    orders = db.relationship('Order', backref='user', lazy=True)
-    banks = db.relationship('Bank', backref = 'user', lazy=True)
+    cart_items = db.relationship('CartItem', backref='user')
+    orders = db.relationship('Order', backref='user')
+    banks = db.relationship('Bank', backref = 'user')
+    visitors = db.relationship('Visitor', backref = 'user', )
 
     def __init__(self, name, email, password):
         self.name = name
@@ -61,6 +69,7 @@ class User(db.Model):
             'address_zipcode': self.address_zipcode,
             'address_country': self.address_country,
             'phone': self.phone,
+            'gender': self.gender.name if self.gender else None,
             'status': self.status,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

@@ -23,6 +23,7 @@ email-validator = "^2.1.0.post1"
 celery = "^5.5.1"
 redis = "^5.2.1"
 imagekitio = "^4.1.0"
+marshmallow-enum = "^1.5.1"
 
 
 [build-system]

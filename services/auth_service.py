@@ -1,10 +1,11 @@
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
-from model.userModel import User
+from model.userModel import User, GenderEnum
 from connector.db import db
 from schemas.auth_schema import RegisterSchema, LoginSchema, UpdateUserSchema
 from marshmallow import ValidationError
 from services.uploadimg_service import UploadImageService
+
 
 
 class AuthService:
@@ -150,18 +151,28 @@ class AuthService:
             schema = UpdateUserSchema()
             data = schema.load(data)
 
-            # for key,value in data.items():
-            #     setattr(user,key,value)
+            # update user
             allowed_key = [
                     "address_city", "address_district","address_subdistrict", 
                    "address_street", "address_country", "address_zipcode",
                    "email", "name", "phone"
                 ]
 
+            # Mengupdate kolom yang valid dari input data
             for k in allowed_key:
-                setattr(user, k, data[k])
+                if k in data:
+                    setattr(user, k, data[k])
 
-            
+            # Mengupdate kolom gender jika ada dan valid
+            if 'gender' in data and data['gender']:
+                try:
+                    user.gender = GenderEnum(data['gender'])  # Mengubah gender menjadi enum
+                except ValueError:
+                    return {
+                        'status': 'error',
+                        'message': 'Nilai gender tidak valid'
+                    }
+
             db.session.commit()
             return {
                 'status': 'success',
