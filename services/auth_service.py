@@ -22,7 +22,7 @@ class AuthService:
             
             # Create new user
             user = User(
-                name='Username',
+                name= data['name'],
                 email=data['email'],
                 password=data['password']
             )
@@ -161,7 +161,7 @@ class AuthService:
             # Mengupdate kolom yang valid dari input data
             for k in allowed_key:
                 if k in data:
-                    setattr(user, k, data[k])
+                    setattr(user, k, data[k].lower())
 
             # Mengupdate kolom gender jika ada dan valid
             if 'gender' in data and data['gender']:

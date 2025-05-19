@@ -43,6 +43,7 @@ class User(db.Model):
     orders = db.relationship('Order', backref='user')
     banks = db.relationship('Bank', backref = 'user')
     visitors = db.relationship('Visitor', backref = 'user', )
+    # shops = db.relationship('Shop', backref='user')
 
     def __init__(self, name, email, password):
         self.name = name
@@ -76,3 +77,5 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.name}>'
+
+    

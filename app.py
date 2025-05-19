@@ -11,6 +11,7 @@ from router.uploadRoute import upload_bp
 from router.bankRoute import bank_bp
 from router.productImageRoute import productImage_bp
 from router.visitorRoute import visitor_bp
+from router.shopRoute import shop_bp
 from imagekitio import ImageKit
 # from celery_app import celery
 import os
@@ -54,6 +55,7 @@ app.register_blueprint(upload_bp, url_prefix='/upload')
 app.register_blueprint(bank_bp, url_prefix='/bank')
 app.register_blueprint(productImage_bp, url_prefix='/productImage')
 app.register_blueprint(visitor_bp, url_prefix='/visitor')
+app.register_blueprint(shop_bp, url_prefix='/shop')
 
 # global error handler
 @app.errorhandler(Exception)
