@@ -12,6 +12,8 @@ class ProductSchema(Schema):
     status = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
 
+    shop_id = fields.Integer()
+
     # nested schema
     product_images = fields.Nested('ProductImageSchema', many=True, dump_only=True)
 
@@ -24,6 +26,8 @@ class ProductQuerySchema(Schema):
     sort = fields.String(validate=validate.OneOf(['price_asc', 'price_desc', 'newest', 'oldest']))
     page = fields.Integer(validate=validate.Range(min=1), load_default=1)
     per_page = fields.Integer(validate=validate.Range(min=1, max=100), load_default=20)
+
+    shop_id = fields.Integer()
 
 class ProductResponseSchema(Schema):
     status = fields.String()

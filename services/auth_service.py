@@ -40,7 +40,7 @@ class AuthService:
             
             # Create access token
             access_token = create_access_token(
-                identity=user.user_id,
+                identity=str(user.user_id),
                 expires_delta=timedelta(days=1)
             )
             
@@ -88,7 +88,7 @@ class AuthService:
             
             # Create access token
             access_token = create_access_token(
-                identity=user.user_id,
+                identity=str(user.user_id),
                 expires_delta=timedelta(days=1)
             )
             

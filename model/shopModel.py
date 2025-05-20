@@ -21,6 +21,8 @@ class Shop(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String(20), nullable=False, default='active')
     
+    # Relationship
+    product = db.relationship('Product', backref='shop')
     
     def __init__(self, user_id, shop_name, shop_address_city=None, shop_phone=None, description=None):
         self.user_id = user_id

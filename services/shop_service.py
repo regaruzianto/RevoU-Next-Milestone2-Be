@@ -65,15 +65,15 @@ class ShopService:
             }
     
     @staticmethod
-    def create_shop(data):
+    def create_shop(user_id,data):
         try:
             # Validate input data
             schema = ShopCreateSchema()
             data = schema.load(data)
-
+            user_id = int(user_id)
             # Create new shop
             shop = Shop(
-                user_id=data['user_id'],
+                user_id= user_id,
                 shop_name=data['shop_name'].lower(),
                 shop_address_city=data.get('shop_address_city').lower(),
                 shop_phone=data.get('shop_phone'),
@@ -102,10 +102,12 @@ class ShopService:
             }
     
     @staticmethod
-    def update_shop(shop_id, data):
+    def update_shop(user_id, data):
         try:
+            user_id = int(user_id)
+
             # Find shop
-            shop = Shop.query.filter_by(shop_id=shop_id).first()
+            shop = Shop.query.filter_by(user_id=user_id).first()
 
             if not shop:
                 return {

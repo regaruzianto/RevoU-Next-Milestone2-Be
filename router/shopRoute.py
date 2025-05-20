@@ -2,6 +2,7 @@ from model.shopModel import Shop
 from services.shop_service import ShopService
 from flask import Blueprint, request, jsonify
 from schemas.shop_schema import ShopCreateSchema
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 shop_bp = Blueprint('shop_bp', __name__)
 
@@ -43,10 +44,13 @@ def get_shop_by_name(shop_name):
 
 
 @shop_bp.route('/shop', methods=['POST'])
+@jwt_required()
 def create_shop():
     try:
+        user_id = get_jwt_identity()
         data = request.get_json()
-        result = ShopService.create_shop(data)
+
+        result = ShopService.create_shop(user_id,data)
         return jsonify(result), 201 if result.get('status') == 'success' else 400
     except Exception as e:
         return jsonify({
@@ -55,11 +59,14 @@ def create_shop():
             'error': str(e)
         }), 500
     
-@shop_bp.route('/update/<int:shop_id>', methods=['PUT'])
-def update_shop(shop_id):
+@shop_bp.route('/update', methods=['PUT'])
+@jwt_required()
+def update_shop():
     try:
+        user_id = get_jwt_identity()
+
         data = request.get_json()
-        result = ShopService.update_shop(shop_id, data)
+        result = ShopService.update_shop(user_id, data)
         return jsonify(result), 200 if result.get('status') == 'success' else 400
     except Exception as e:
         return jsonify({

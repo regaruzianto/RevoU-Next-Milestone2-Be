@@ -12,10 +12,10 @@ class Bank(db.Model):
     account_number = db.Column(db.Integer, nullable=False, unique=True)
     code = db.Column(db.String, nullable = False )
 
-    def __init__(self,user_id, name, number, code):
+    def __init__(self,user_id, account_name, account_number, code):
         self.user_id = user_id
-        self.account_name = name
-        self.account_number = number 
+        self.account_name = account_name
+        self.account_number = account_number 
         self.code = code
 
 

@@ -17,17 +17,22 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
+    # Shop Foreign key
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.shop_id'), nullable=True)
+
     # Relationships
     cart_items = db.relationship('CartItem', backref='product')
     order_items = db.relationship('OrderItem', backref='product')
     product_images = db.relationship('ProductImage', backref='product')
+    
 
-    def __init__(self, name, price, category, description=None, stock=0):
+    def __init__(self, name, price, category, description=None, stock=0, shop_id=None):
         self.name = name
         self.price = price
         self.category = category
         self.description = description
         self.stock = stock
+        self.shop_id = shop_id
 
     def to_dict(self):
         return {
@@ -38,7 +43,8 @@ class Product(db.Model):
             'stock': self.stock,
             'category': self.category,
             'status': self.status,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'shop_id': self.shop_id
         }
 
     def __repr__(self):

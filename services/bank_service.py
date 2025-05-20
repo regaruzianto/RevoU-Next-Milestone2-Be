@@ -34,7 +34,8 @@ class BankService:
     @staticmethod
     def create_bank_account(user_id, data):
         try: 
-            
+            user_id = int(user_id)
+
             # validasi input data 
             schema = BankCreateSchema()
             data = schema.load(data)
@@ -53,8 +54,8 @@ class BankService:
 
                 bank_account = Bank(
                     user_id=user_id,
-                    name= data['account_name'],
-                    number=data['account_number'],
+                    account_name= data['account_name'],
+                    account_number=data['account_number'],
                     code=data['code']          
                 )
 
@@ -105,10 +106,10 @@ class BankService:
             }
         
     @staticmethod
-    def delete_bank_account(user_id):
+    def delete_bank_account(user_id, account_id):
         try:
-
-            bank_account = Bank.query.filter_by(user_id=user_id).first()
+            user_id = int(user_id)
+            bank_account = Bank.query.filter_by( user_id=user_id ,account_id=account_id).first()
 
             if not bank_account:
                 return {
