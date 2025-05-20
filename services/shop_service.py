@@ -71,6 +71,15 @@ class ShopService:
             schema = ShopCreateSchema()
             data = schema.load(data)
             user_id = int(user_id)
+
+            # Check if user already has a shop
+            existing_shop = Shop.query.filter_by(user_id=user_id).first()
+            if existing_shop:
+                return {
+                    'status': 'error',
+                    'message': 'User sudah memiliki toko'
+                }
+
             # Create new shop
             shop = Shop(
                 user_id= user_id,
