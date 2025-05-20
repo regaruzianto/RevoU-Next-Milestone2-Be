@@ -4,6 +4,9 @@ from schemas.product_schema import ProductSchema, ProductQuerySchema
 from marshmallow import ValidationError
 from sqlalchemy import desc, asc
 from sqlalchemy.orm import joinedload
+from model.shopModel import Shop
+
+
 
 class ProductService:
     @staticmethod
@@ -100,14 +103,31 @@ class ProductService:
             }
 
     @staticmethod
-    def create_product(data):
+    def create_product(user_id,data):
         try:
+            user_id = int(user_id)
+            # Find shop
+            shop = Shop.query.filter_by(user_id=user_id).first()
+
+            if not shop:
+                return {
+                    'status': 'error',
+                    'message': 'Toko tidak ditemukan'
+                }
+
             # Validate input data
             schema = ProductSchema()
             data = schema.load(data)
             
             # Create new product
-            product = Product(**data)
+            product = Product(
+                name=data['name'],
+                description=data['description'],
+                category=data['category'],
+                price=data['price'],
+                stock=data['stock'],
+                shop_id=shop.shop_id
+            )
             
             # Save to database
             db.session.add(product)
@@ -134,10 +154,19 @@ class ProductService:
             }
 
     @staticmethod
-    def update_product(product_id, data):
+    def update_product(user_id,product_id, data):
         try:
+            # Find shop
+            shop = Shop.query.filter_by(user_id=user_id).first()
+
+            if not shop:
+                return {
+                    'status': 'error',
+                    'message': 'Toko tidak ditemukan'
+                }
+
             # Find product
-            product = Product.query.get(product_id)
+            product = Product.query.filter_by(shop_id=shop.shop_id, product_id=product_id).first()
             
             if not product:
                 return {
