@@ -17,6 +17,9 @@ class ProductSchema(Schema):
     # nested schema
     product_images = fields.Nested('ProductImageSchema', many=True, dump_only=True)
 
+    # nested shop
+    shop = fields.Nested('ShopSchema', dump_only=True)
+
 
 class ProductQuerySchema(Schema):
     product_id = fields.Integer()

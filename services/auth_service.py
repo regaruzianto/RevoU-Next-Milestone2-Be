@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token
 from datetime import timedelta
 from model.userModel import User, GenderEnum
 from connector.db import db
-from schemas.auth_schema import RegisterSchema, LoginSchema, UpdateUserSchema
+from schemas.auth_schema import RegisterSchema, LoginSchema, UpdateUserSchema, ChangePasswordSchema
 from marshmallow import ValidationError
 from services.uploadimg_service import UploadImageService
 
@@ -77,7 +77,7 @@ class AuthService:
             data = schema.load(data)
             
             # Find user by email
-            user = User.query.filter_by(email=data['email']).first()
+            user = User.query.filter(User.email == data['email'], User.status == 'active').first()
             
             # Check if user exists and password is correct
             if not user or not user.check_password(data['password']):
@@ -186,3 +186,44 @@ class AuthService:
                 'message': 'Terjadi kesalahan saat mengupdate user',
                 'errors': str(e)
             }
+        
+    @staticmethod
+    def change_password(user_id, data):
+        try:
+            # validate input
+            schema = ChangePasswordSchema()
+            data = schema.load(data)
+
+            # check user
+            user = User.query.filter(User.user_id == user_id, User.status == 'active').first()
+
+            # Check if user exists and password is correct
+            if not user or not user.check_password(data['password']):
+                return {
+                    'status': 'error',
+                    'message': 'Password lama salah'
+                }
+            
+            user.set_password(data['new_password'])
+            db.session.commit()
+
+            return {
+                'status': 'success',
+                'message': 'Password berhasil diubah'
+            }
+        
+        except ValidationError as e:
+            return {
+                'status': 'error',
+                'message': 'Validasi gagal',
+                'errors': e.messages
+            }
+
+
+        except Exception as e :
+            return {
+                'status': 'error',
+                'message': 'Terjadi kesalahan saat mengubah password',
+                'errors': str(e)
+            }
+        

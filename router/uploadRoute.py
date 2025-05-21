@@ -4,6 +4,7 @@ from services.uploadimg_service import UploadImageService
 import os
 import requests
 import base64
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 upload_bp = Blueprint('upload_bp', __name__)
@@ -101,3 +102,27 @@ def delete_product_image(product_id, file_id):
             'message': "Terjadi kesalahan server",
             'error': str(e)
         })
+    
+@upload_bp.route('/shopimage', methods=['POST'])
+@jwt_required()
+def upload_shop_image():
+    try:
+
+        file = request.files.get('image')
+        user_id = get_jwt_identity()
+
+        if not file:
+            return jsonify({
+                "status": "error",
+                "message": "File image tidak ditemukan di request."
+            }), 404
+
+        result = UploadImageService.upload_shop_image(file, user_id)
+
+        return jsonify(result), 200 if result.get('status') == 'success' else 400
+    
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': "Terjadi kesalahan server"
+        }), 500

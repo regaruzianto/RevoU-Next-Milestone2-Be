@@ -7,6 +7,7 @@ import base64
 import os
 from model.userModel import User
 from model.productImageModel import ProductImage
+from model.shopModel import Shop
 from connector.db import db
 
 
@@ -287,3 +288,45 @@ class UploadImageService:
                 "message": "Terjadi kesalahan pada upload image.",
                 "error": str(e)
             }
+        
+    @staticmethod
+    def upload_shop_image(file, user_id):
+        try:
+
+            shop = Shop.query.filter_by(user_id=user_id).first()
+
+            if not shop:
+                return {
+                    'status': 'error',
+                    'message': 'Toko tidak ditemukan'
+                }
+            
+            # cek existing image
+            if shop.shop_imageId:
+                delete = UploadImageService.delete_imagekit(shop.shop_imageId)
+
+                if delete.get('status') == 'error':
+                    return delete
+
+
+            # Upload gambar baru
+            result = UploadImageService.upload(file, folder_name='/shops/profile')
+
+            shop.shop_image = result['data']['url']
+            shop.shop_imageId = result['data']['fileId']
+
+            db.session.commit()
+            return {
+            'status': 'success',
+            'message': 'Gambar Toko berhasil diupdate',
+            'data': shop.to_dict()
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Terjadi kesalahan pada upload image.",
+                "error": str(e)
+            }
+                    
+

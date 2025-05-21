@@ -75,3 +75,6 @@ class UserSchemaResponse(Schema):
     updated_at = fields.DateTime(dump_only=True)
     gender = fields.String(dump_only=True)
 
+class ChangePasswordSchema(Schema):
+    password = fields.String(required=True, validate=validate.Length(min=8))
+    new_password = fields.String(required=True, validate=validate.Length(min=8))
