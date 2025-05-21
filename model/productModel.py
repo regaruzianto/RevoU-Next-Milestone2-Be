@@ -24,6 +24,7 @@ class Product(db.Model):
     cart_items = db.relationship('CartItem', backref='product')
     order_items = db.relationship('OrderItem', backref='product')
     product_images = db.relationship('ProductImage', backref='product')
+    product_visitors = db.relationship('ProductVisitor', backref='product')
     
 
     def __init__(self, name, price, category, description=None, stock=0, shop_id=None):

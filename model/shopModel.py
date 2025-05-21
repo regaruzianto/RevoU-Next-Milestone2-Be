@@ -23,6 +23,8 @@ class Shop(db.Model):
     
     # Relationship
     product = db.relationship('Product', backref='shop')
+    product_visitors = db.relationship('ProductVisitor', backref='shop')
+
     
     def __init__(self, user_id, shop_name, shop_address_city=None, shop_phone=None, description=None):
         self.user_id = user_id

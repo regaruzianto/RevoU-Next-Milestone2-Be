@@ -43,7 +43,8 @@ class User(db.Model):
     orders = db.relationship('Order', backref='user')
     banks = db.relationship('Bank', backref = 'user')
     visitors = db.relationship('Visitor', backref = 'user', )
-    # shops = db.relationship('Shop', backref='user')
+    shops = db.relationship('Shop', backref='user')
+    product_visitors = db.relationship('ProductVisitor', backref='user')
 
     def __init__(self, name, email, password):
         self.name = name
