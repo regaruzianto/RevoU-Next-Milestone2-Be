@@ -75,3 +75,4 @@ def delete_product(product_id):
             'message': 'Terjadi kesalahan server',
             'error': str(e)
         }), 500
+    

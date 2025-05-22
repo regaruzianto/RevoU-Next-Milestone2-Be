@@ -21,12 +21,15 @@ class ProductService:
             query = Product.query.filter_by(status='active')
             
             # Apply filters
+            if params.get('shop_id'):
+                query = query.filter(Product.shop_id == params['shop_id'])
             if params.get('category'):
                 query = query.filter_by(category=params['category'])
             if params.get('min_price'):
                 query = query.filter(Product.price >= params['min_price'])
             if params.get('max_price'):
                 query = query.filter(Product.price <= params['max_price'])
+            
                 
             # Apply sorting
             if params.get('sort'):
@@ -233,3 +236,4 @@ class ProductService:
                 'message': 'Terjadi kesalahan saat menghapus produk',
                 'errors': str(e)
             } 
+    
