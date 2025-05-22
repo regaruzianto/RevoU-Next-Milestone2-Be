@@ -209,10 +209,26 @@ class ProductService:
             }
 
     @staticmethod
-    def delete_product(product_id):
+    def delete_product(user_id,product_id):
         try:
-            # Find product
-            product = Product.query.get(product_id)
+            
+            user_id = int(user_id)
+            # check user and shop
+            shop = Shop.query.filter_by(user_id=user_id).first()    
+
+            if not shop:
+                return {
+                    'status': 'error',
+                    'message': 'Toko tidak ditemukan'
+                }
+
+            product = Product.query.filter(Product.shop_id == shop.shop_id, Product.product_id == product_id).first()
+
+            if not product:
+                return {
+                    'status': 'error',
+                    'message': 'Produk tidak ditemukan'
+                }
             
             if not product:
                 return {

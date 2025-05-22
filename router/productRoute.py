@@ -65,9 +65,12 @@ def update_product(product_id):
         }), 500
     
 @product_bp.route('/<int:product_id>', methods=['DELETE'])
+@jwt_required()
 def delete_product(product_id):
     try:
-        result = ProductService.delete_product(product_id)
+        user_id = get_jwt_identity()    
+
+        result = ProductService.delete_product(user_id,product_id)
         return jsonify(result), 200 if result.get("status") == "success" else 400
     except Exception as e:
         return jsonify({
