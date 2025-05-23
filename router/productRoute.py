@@ -78,4 +78,18 @@ def delete_product(product_id):
             'message': 'Terjadi kesalahan server',
             'error': str(e)
         }), 500
-    
+
+
+@product_bp.route('/byuserid', methods=['GET'])
+def get_products_by_userID():
+    try:
+        # Get query parameters
+        query_params = request.args.to_dict()
+        result = ProductService.get_products_by_userID(query_params)
+        return jsonify(result), 200 if result.get("status") == "success" else 400
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': 'Terjadi kesalahan server',
+            'error': str(e)
+        }), 500

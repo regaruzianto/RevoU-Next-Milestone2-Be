@@ -42,3 +42,15 @@ class ProductListResponseSchema(Schema):
     message = fields.String()
     data = fields.List(fields.Nested(ProductSchema))
     pagination = fields.Dict(keys=fields.String(), values=fields.Integer()) 
+
+
+class ProductUserQuerySchema(Schema):
+    user_id = fields.Integer()
+    product_id = fields.Integer()
+    category = fields.String()
+    min_price = fields.Decimal()
+    max_price = fields.Decimal()
+    sort = fields.String(validate=validate.OneOf(['price_asc', 'price_desc', 'newest', 'oldest']))
+    page = fields.Integer(validate=validate.Range(min=1), load_default=1)
+    per_page = fields.Integer(validate=validate.Range(min=1, max=100), load_default=20)
+
